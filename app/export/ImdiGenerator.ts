@@ -9,6 +9,8 @@ const moment = require("moment");
 import { File } from "../model/file/File";
 import * as Path from "path";
 import { Person } from "../model/Project/Person/Person";
+import Archiver = require("archiver");
+import * as fs from "fs";
 
 export default class ImdiGenerator {
   private tail: XmlBuilder.XMLElementOrXMLNode;
@@ -237,5 +239,51 @@ export default class ImdiGenerator {
   }
   private makeString(): string {
     return this.tail.end({ pretty: true });
+  }
+
+  public static saveImdiZip(project: Project) {
+    // create a file to stream archive data to.
+    const output = fs.createWriteStream(project.directory + "/imdi.zip");
+    const archive = Archiver("zip");
+
+    // listen for all archive data to be written
+    // 'close' event is fired only when a file descriptor is involved
+    output.on("close", () => {
+      console.log("saveImdiZip " + archive.pointer() + " total bytes");
+      console.log(
+        "saveImdiZip archiver has been finalized and the output file descriptor has closed."
+      );
+    });
+
+    // This event is fired when the data source is drained no matter what was the data source.
+    // It is not part of this library but rather from the NodeJS Stream API.
+    // @see: https://nodejs.org/api/stream.html#stream_event_end
+    output.on("end", () => {
+      console.log("saveImdiZip Data has been drained");
+    });
+
+    // good practice to catch warnings (ie stat failures and other non-blocking errors)
+    archive.on("warning", err => {
+      if (err.code === "ENOENT") {
+        console.log("saveImdiZip Warning: " + err);
+      } else {
+        // throw error
+        throw err;
+      }
+    });
+
+    // good practice to catch this error explicitly
+    archive.on("error", err => {
+      console.log("saveImdiZip error: " + err);
+    });
+
+    // pipe archive data to the file
+    archive.pipe(output);
+
+    archive.append(ImdiGenerator.generateCorpus(project), {
+      name: `${project.displayName}.imdi`
+    });
+
+    archive.finalize();
   }
 }
