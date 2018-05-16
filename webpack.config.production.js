@@ -7,6 +7,10 @@ const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const merge = require("webpack-merge");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const {
+  BugsnagSourceMapUploaderPlugin,
+  BugsnagBuildReporterPlugin
+} = require("webpack-bugsnag-plugins");
 const baseConfig = require("./webpack.config.base");
 
 module.exports = merge(baseConfig, {
@@ -110,6 +114,22 @@ module.exports = merge(baseConfig, {
       filename: "../app.html",
       template: "app/app.html",
       inject: false
+    }),
+    new BugsnagBuildReporterPlugin(
+      {
+        apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+        appVersion: "0.0.0", // TODO
+        releaseStage: "dev"
+        //sourceControl: { provider: "github",  }
+      }, //build
+      {} // opts),
+    ),
+    // It's a good idea to only run this plugin when you're building a bundle
+    // that will be released, rather than for every development build
+    new BugsnagSourceMapUploaderPlugin({
+      apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+      appVersion: "0.0.0", // TODO
+      overwrite: true
     })
   ],
 

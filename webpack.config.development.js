@@ -7,12 +7,16 @@
 const webpack = require("webpack");
 const merge = require("webpack-merge");
 const baseConfig = require("./webpack.config.base");
-
+const {
+  BugsnagSourceMapUploaderPlugin,
+  BugsnagBuildReporterPlugin
+} = require("webpack-bugsnag-plugins");
 const port = process.env.PORT || 3000;
 
 module.exports = merge(baseConfig, {
   mode: "development",
-  devtool: "inline-source-map",
+  //  devtool: "inline-source-map",
+  devtool: "source-map", //bugsnag wanted this https://github.com/bugsnag/bugsnag-js/issues/147
 
   entry: [
     "react-hot-loader/patch",
@@ -138,6 +142,23 @@ module.exports = merge(baseConfig, {
     new webpack.LoaderOptionsPlugin({
       debug: true
     })
+
+    // new BugsnagBuildReporterPlugin(
+    //   {
+    //     apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+    //     appVersion: "0.0.0", // TODO
+    //     releaseStage: "dev"
+    //     //sourceControl: { provider: "github",  }
+    //   }, //build
+    //   {} // opts),
+    // ),
+    // // It's a good idea to only run this plugin when you're building a bundle
+    // // that will be released, rather than for every development build
+    // new BugsnagSourceMapUploaderPlugin({
+    //   apiKey: "f8b144863f4723ebb4bdd6c747c5d7b6",
+    //   appVersion: "0.0.0", // TODO
+    //   overwrite: true
+    // })
   ],
 
   // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works

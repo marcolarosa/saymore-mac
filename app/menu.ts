@@ -1,6 +1,8 @@
 import { Menu, remote } from "electron";
 import HomePage from "./containers/HomePage";
 import ImdiGenerator from "./export/imdiGenerator";
+import bugsnag from "bugsnag-js";
+const bugsnagClient = bugsnag("f8b144863f4723ebb4bdd6c747c5d7b6");
 
 export default class SayLessMenu {
   private homePage: HomePage;
@@ -125,6 +127,18 @@ export default class SayLessMenu {
           accelerator: "Alt+Ctrl+I",
           click() {
             mainWindow.webContents.toggleDevTools();
+          }
+        },
+        {
+          label: "Test throw",
+          click() {
+            throw new Error("Test throw from menu");
+          }
+        },
+        {
+          label: "Test bugsnag",
+          click() {
+            bugsnagClient.notify(new Error("Test notify bugsnage from menu"));
           }
         }
       ]
