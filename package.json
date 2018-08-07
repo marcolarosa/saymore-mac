@@ -64,6 +64,7 @@
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
       "\\.xml$": "jest-raw-loader"
     },
+    "testEnvironment": "node",
     "testMatch": [
       "**/?(*.)(spec|test).ts?(x)"
     ]
