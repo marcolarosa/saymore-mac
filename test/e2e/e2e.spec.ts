@@ -16,7 +16,7 @@ import SayLessRunner from "./SayLessRunner";
 const delay = (time: number) =>
   new Promise(resolve => setTimeout(resolve, time));
 
-describe("main window", function spec() {
+describe.skip("main window", function spec() {
   const runner = new SayLessRunner();
 
   const kProjectName = "e2eproject";
