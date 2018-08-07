@@ -14,4 +14,5 @@ const result = spawn.sync(
   { stdio: "inherit" }
 );
 
+console.log("status", result.status);
 process.exit(result.status);
